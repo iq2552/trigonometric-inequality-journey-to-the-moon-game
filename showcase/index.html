@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stock Briefs</title>
+<style>
+  :root {
+    --text: #1a1a1a;
+    --muted: #595959;
+    --border: #e2e2e2;
+    --bg: #ffffff;
+    --card-bg: #fafafa;
+    --accent: #1f5f3f;
+    --code-bg: #f0f0f0;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 40px 20px;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans Thai", "Sarabun", Tahoma, sans-serif;
+    line-height: 1.7;
+  }
+  .wrap { max-width: 800px; margin: 0 auto; }
+
+  header.page-header { margin-bottom: 32px; }
+  header.page-header h1 { font-size: 1.8em; margin: 0 0 6px; }
+  header.page-header p { color: var(--muted); margin: 0; }
+
+  /* gallery */
+  #gallery { display: grid; gap: 16px; }
+  .card {
+    display: block;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    background: var(--card-bg);
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .card:hover {
+    border-color: var(--accent);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .card .ticker { font-size: 1.3em; font-weight: 700; margin: 0; }
+  .card .company { color: var(--muted); margin: 2px 0 10px; font-size: 0.95em; }
+  .card .preview {
+    margin: 0 0 10px;
+    color: var(--text);
+    font-size: 0.95em;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .card .read-more { color: var(--accent); font-size: 0.9em; font-weight: 600; }
+
+  /* detail sections, hidden by default, shown when targeted via URL hash */
+  .detail { display: none; padding-top: 8px; }
+  .detail:target { display: block; }
+  body:has(.detail:target) #gallery { display: none; }
+  body:has(.detail:target) header.page-header { display: none; }
+
+  .back-link {
+    display: inline-block;
+    margin-bottom: 20px;
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95em;
+  }
+  .back-link:hover { text-decoration: underline; }
+
+  /* rendered brief content */
+  .brief h1 { font-size: 1.6em; margin: 0 0 20px; border-bottom: 2px solid var(--border); padding-bottom: 12px; }
+  .brief h2 { font-size: 1.2em; margin: 32px 0 12px; color: var(--accent); }
+  .brief p { margin: 0 0 14px; }
+  .brief ul, .brief ol { margin: 0 0 14px; padding-left: 22px; }
+  .brief li { margin-bottom: 8px; }
+  .brief blockquote {
+    margin: 0 0 18px;
+    padding: 10px 16px;
+    border-left: 4px solid var(--accent);
+    background: var(--card-bg);
+    color: var(--muted);
+  }
+  .brief blockquote p { margin: 0; }
+  .brief code {
+    background: var(--code-bg);
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-size: 0.9em;
+  }
+  .brief hr { border: none; border-top: 1px solid var(--border); margin: 28px 0 14px; }
+  .brief em { color: var(--muted); }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --text: #e8e8e8;
+      --muted: #a3a3a3;
+      --border: #333333;
+      --bg: #121212;
+      --card-bg: #1a1a1a;
+      --accent: #4caf7d;
+      --code-bg: #242424;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="page-header">
+    <h1>Stock Briefs</h1>
+    <p>Research brief จาก briefs/ — คลิกการ์ดเพื่ออ่านฉบับเต็ม</p>
+  </header>
+
+  <div id="gallery">
+
+    <a class="card" href="#AAPL">
+      <p class="ticker">AAPL</p>
+      <p class="company">Apple Inc.</p>
+      <p class="preview">Apple ออกแบบ ผลิต และขายฮาร์ดแวร์เป็นหลัก — iPhone, Mac, iPad, Apple Watch, AirPods, Vision Pro — แล้วผูกลูกค้าไว้กับซอฟต์แวร์และบริการของตัวเอง ลูกค้าคือผู้บริโภคทั่วไปที่ยอมจ่ายแพงกว่าคู่แข่งเพื่อแลกกับ ecosystem ที่ใช้งานลื่นและแบรนด์ที่ไว้ใจได้</p>
+      <span class="read-more">อ่านฉบับเต็ม →</span>
+    </a>
+
+    <a class="card" href="#GOOGL">
+      <p class="ticker">GOOGL</p>
+      <p class="company">Alphabet Inc.</p>
+      <p class="preview">ไม่มีข้อมูล — ไม่มีไฟล์ 10-K ใน sources/GOOGL/ ให้อ่าน จึงไม่สามารถสรุปว่าบริษัททำอะไร ขายให้ใคร รายได้หลักมาจากไหน ได้อย่างมี source รองรับ ต้องเพิ่มไฟล์ 10-K ก่อน</p>
+      <span class="read-more">อ่านฉบับเต็ม →</span>
+    </a>
+
+    <a class="card" href="#NVDA">
+      <p class="ticker">NVDA</p>
+      <p class="company">NVIDIA Corporation</p>
+      <p class="preview">ไม่มีข้อมูล — ไม่มีไฟล์ 10-K ใน sources/NVDA/ ให้อ่าน จึงไม่สามารถสรุปว่าบริษัททำอะไร ขายให้ใคร รายได้หลักมาจากไหน ได้อย่างมี source รองรับ ต้องเพิ่มไฟล์ 10-K ก่อน</p>
+      <span class="read-more">อ่านฉบับเต็ม →</span>
+    </a>
+
+  </div>
+
+  <section class="detail" id="AAPL">
+    <a class="back-link" href="#gallery">← กลับไปหน้ารวม</a>
+    <div class="brief">
+      <h1>AAPL — Apple Inc. Stock Brief</h1>
+      <h2>1. Company snapshot</h2>
+      <p>Apple ออกแบบ ผลิต และขายฮาร์ดแวร์เป็นหลัก — iPhone, Mac, iPad, Apple Watch, AirPods, Vision Pro — แล้วผูกลูกค้าไว้กับซอฟต์แวร์และบริการของตัวเอง (Advertising, AppleCare, Cloud Services) ลูกค้าคือผู้บริโภคทั่วไปที่ยอมจ่ายแพงกว่าคู่แข่งเพื่อแลกกับ ecosystem ที่ใช้งานลื่นและแบรนด์ที่ไว้ใจได้ รอบปีงบการเงินของบริษัทสิ้นสุดวันเสาร์สุดท้ายของเดือนกันยายน (source: sources/AAPL/10-k-fy2025.md) รายได้หลักมาจากไหนแน่ชัดแค่ไหน (สัดส่วน iPhone vs Services) ยังตรวจสอบไม่ได้จากไฟล์ 10-K ที่มีอยู่ตอนนี้ เพราะไฟล์เป็นแค่ excerpt เปิดเรื่อง ไม่มีตารางรายได้</p>
+      <h2>2. Fundamentals signal</h2>
+      <ul>
+        <li><strong>ไม่สามารถประเมิน revenue trend / margin trend / balance sheet / capital allocation ได้จากไฟล์ 10-K ที่มีอยู่</strong> — ไฟล์ <code>sources/AAPL/10-k-fy2025.md</code> มีแค่ business description กับย่อหน้าเปิดของ MD&amp;A ไม่มีงบการเงิน (income statement, balance sheet, cash flow) เลย (source: sources/AAPL/10-k-fy2025.md)</li>
+        <li>สัญญาณเดียวที่พอมี มาจาก earnings call ไม่ใช่ 10-K: gross margin ไตรมาสล่าสุด (Q3 FY2026) ลดจาก 49.3% → 48.1% และ guidance ไตรมาสถัดไปลดต่อไปที่ midpoint ~46.5% สาเหตุหลักคือต้นทุน memory chip ที่สูงขึ้น (source: sources/AAPL/q1-2026-call.md)</li>
+        <li>ต้องหาไฟล์ 10-K ฉบับที่มีตัวเลขงบการเงินครบ (Consolidated Statements) มาเพิ่มใน <code>sources/AAPL/</code> ก่อนถึงจะประเมิน fundamentals แบบ value investing ได้จริง — ตอนนี้ยังทำไม่ได้อย่างซื่อสัตย์</li>
+      </ul>
+      <h2>3. Latest earnings</h2>
+      <p><strong>Source:</strong> อ่านจากไฟล์เดียวที่มีใน <code>sources/AAPL/</code>: <code>q1-2026-call.md</code> — หมายเหตุ: ชื่อไฟล์บอกว่า Q1 2026 แต่เนื้อหาข้างในระบุว่าเป็น <strong>Q3 FY2026</strong> (front matter: <code>quarter: Q3 FY2026</code>) และเป็นแค่ excerpt สั้นจากช่วง Q&amp;A ไม่ใช่ transcript เต็ม ไม่มีตัวเลข revenue/EPS/unit sales</p>
+      <ul>
+        <li>Gross margin รวมลดลงจาก 49.3% (ไตรมาสมีนาคม) เหลือ 48.1% (ไตรมาสมิถุนายน หลังปรับผล tariff refund) ลดลง 120 basis points โดยมากกว่า 100% ของการเปลี่ยนแปลงมาจากต้นทุน memory ที่สูงขึ้น ไม่ใช่ FX (source: sources/AAPL/q1-2026-call.md)</li>
+        <li>มี partial offset จาก inventory carry benefit, ต้นทุนชิ้นส่วนที่ไม่ใช่ memory ที่ลดลง, และ product mix ที่ดีขึ้น (source: sources/AAPL/q1-2026-call.md)</li>
+        <li>Guidance ไตรมาสถัดไป (กันยายน) อยู่ที่ midpoint ~46.5% (ไม่รวม tariff refund) ลดลงอีก 160 basis points สาเหตุหลักยังเป็นต้นทุน memory เช่นเดิม (source: sources/AAPL/q1-2026-call.md)</li>
+        <li>Tim Cook พูดถึง Apple Intelligence/Siri: ในสหภาพยุโรปยังเปิด Siri AI บน iPhone/iPad เต็มรูปแบบไม่ได้เพราะกฎระเบียบ กำลังทำงานร่วมกับ EU Commission ส่วน Mac เปิดได้เพราะไม่อยู่ภายใต้กฎเดียวกัน (source: sources/AAPL/q1-2026-call.md)</li>
+        <li>ในจีน เพิ่งได้รับอนุมัติให้เริ่ม ship ฟีเจอร์ Apple Intelligence พื้นฐานเมื่อสัปดาห์ก่อนวันประชุม ส่วน Siri AI เต็มรูปแบบยังต้องใช้เวลาเพิ่มเติม (source: sources/AAPL/q1-2026-call.md)</li>
+      </ul>
+      <h2>4. Bull case / Bear case</h2>
+      <p><strong>Bull Case</strong></p>
+      <ul>
+        <li>ลูกค้าที่อยู่ใน ecosystem ของ Apple (iPhone + Mac + Watch + Services) มี switching cost สูง เพราะย้ายแพลตฟอร์มต้องเสียทั้งข้อมูล แอป และความคุ้นเคย</li>
+        <li>แบรนด์ Apple แข็งแรงพอที่จะตั้งราคาพรีเมียมได้ต่อเนื่อง — สะท้อนจากยอดขาย iPhone 17 ที่ analyst มองว่ายังแข็งแรง และ Apple เพิ่งทะลุยอดขาย $10 พันล้านในอินเดีย (source: web search 2026-08-09)</li>
+        <li>Q3 FY2026 iPhone sales รายงานว่าโต 22% ตามข่าวผลประกอบการ (source: web search 2026-08-09) — ต้อง verify ตัวเลขนี้กับ 10-K/transcript ฉบับเต็มอีกครั้งเพราะ source หลักที่อ่านได้ในโปรเจกต์ยังไม่มีตัวเลขนี้โดยตรง</li>
+      </ul>
+      <p><strong>Bear Case</strong></p>
+      <ul>
+        <li>Gross margin กำลังโดนกดดันจากต้นทุน memory chip ที่สูงขึ้นจริง และ guidance เองก็บอกว่าไตรมาสถัดไปจะแย่กว่านี้อีก (source: sources/AAPL/q1-2026-call.md) — นักวิเคราะห์อย่าง Phillip Capital และ GF Securities ปรับลด rating ด้วยเหตุผลเดียวกันในสัปดาห์นี้ (source: web search 2026-08-09)</li>
+        <li>Apple ยังเปิด Siri AI เต็มรูปแบบในตลาดสำคัญอย่าง EU และจีนไม่ได้ เพราะติด regulation (source: sources/AAPL/q1-2026-call.md) — ถ้าคู่แข่งเปิด AI feature ได้เร็วกว่าในตลาดเหล่านี้ อาจกระทบความน่าดึงดูดของ ecosystem</li>
+        <li>มีคดี trade secrets lawsuit ระหว่าง Apple กับ OpenAI ที่ยังดำเนินอยู่ รายละเอียดผลลัพธ์ยังไม่ชัดเจนจากข้อมูลที่หาได้ (source: web search 2026-08-09)</li>
+      </ul>
+      <h2>5. Kill conditions</h2>
+      <ul>
+        <li>Gross margin ลดลงต่อเนื่อง 3 ไตรมาสติด จากสาเหตุต้นทุน component (ไม่ใช่แค่ one-time) — สัญญาณว่า pricing power กำลังถูกกัดกร่อนจริง</li>
+        <li>ผ่านไปหลายไตรมาสแล้ว Apple ยังเปิด Siri AI เต็มรูปแบบใน EU หรือจีนไม่ได้ ขณะที่คู่แข่งเปิดให้ใช้ AI feature ได้แล้วในตลาดเหล่านั้น</li>
+        <li>ยอดขาย iPhone ในจีนหดตัวรุนแรงต่อเนื่องหลายไตรมาส โดยไม่มีสัญญาณฟื้นตัวจากสินค้าใหม่</li>
+      </ul>
+      <h2>6. What to ask before owning it</h2>
+      <ol>
+        <li>ต้นทุน memory ที่กดดัน margin ตอนนี้เป็นปัญหาชั่วคราว (cyclical) หรือโครงสร้างระยะยาว?</li>
+        <li>รายได้จริงแบ่งเป็นสัดส่วน iPhone vs Services เท่าไหร่ และ trend เปลี่ยนไปทางไหนในช่วง 2-3 ปีที่ผ่านมา? (ต้องหาไฟล์ 10-K ฉบับเต็มมาตอบ)</li>
+        <li>ถ้า Apple เปิด Siri AI เต็มรูปแบบใน EU/จีนไม่ทันคู่แข่ง จะกระทบ ecosystem lock-in ที่เป็นจุดแข็งหลักแค่ไหน?</li>
+        <li>งบดุลและ capital allocation (buyback, dividend, debt) เป็นยังไง — ยังตรวจสอบไม่ได้จาก source ที่มีตอนนี้</li>
+        <li>ราคาที่จะซื้อวันนี้ สะท้อนการเติบโตที่เชื่อว่าจะเกิดขึ้นจริงในอีก 3-5 ปีหรือยัง?</li>
+      </ol>
+      <hr>
+      <p><em>Brief นี้เป็นสรุปข้อมูลเพื่อการวิจัยเท่านั้น ไม่ใช่คำแนะนำในการซื้อ/ขาย</em></p>
+    </div>
+    <a class="back-link" href="#gallery">← กลับไปหน้ารวม</a>
+  </section>
+
+  <section class="detail" id="GOOGL">
+    <a class="back-link" href="#gallery">← กลับไปหน้ารวม</a>
+    <div class="brief">
+      <h1>GOOGL — Alphabet Inc. Stock Brief</h1>
+      <blockquote><p><strong>Gap สำคัญ:</strong> โปรเจกต์นี้ไม่มีโฟลเดอร์ <code>sources/GOOGL/</code> เลย (มีแค่ <code>sources/AAPL/</code>) ทั้ง Reze (10-K) และ Megumin (earnings call) หาไฟล์ไม่เจอ จึงไม่มี source ที่ verify ได้สำหรับ section 1-3 ด้านล่าง — ไม่ขอแต่งข้อมูลจาก training memory มาแทนตามกฎ ถ้าต้องการ brief ที่ครบ ต้องเพิ่มไฟล์ <code>sources/GOOGL/10-k-*.md</code> และ <code>sources/GOOGL/q*-call.md</code> ก่อน</p></blockquote>
+      <h2>1. Company snapshot</h2>
+      <p><strong>ไม่มีข้อมูล</strong> — ไม่มีไฟล์ 10-K ใน <code>sources/GOOGL/</code> ให้ Reze อ่าน (source: sources/GOOGL/ — ไม่พบ) จึงไม่สามารถสรุปว่าบริษัททำอะไร ขายให้ใคร รายได้หลักมาจากไหน ได้อย่างมี source รองรับ ต้องเพิ่มไฟล์ 10-K ก่อน</p>
+      <h2>2. Fundamentals signal</h2>
+      <p><strong>ไม่มีข้อมูล</strong> — ไม่มี revenue trend / margin trend / balance sheet feel / capital allocation pattern ที่ verify ได้ เพราะไม่มีไฟล์ 10-K ต้นทาง (source: sources/GOOGL/ — ไม่พบ)</p>
+      <h2>3. Latest earnings</h2>
+      <p><strong>ไม่มี earnings transcript ใน sources/GOOGL/</strong> — Megumin หาไฟล์ <code>q*-call.md</code> ไม่เจอเลย จึงไม่มีตัวเลขไตรมาสล่าสุด, guidance, หรือ management commentary ที่มี source รองรับ ห้ามแต่งตัวเลขจากความจำ (จาก web search รู้แค่ว่า Q2 2026 earnings รายงานไปแล้วเมื่อ 22 ก.ค. 2026 และหุ้นร่วง 7%+ ในวันนั้น แต่ตัวเลข revenue/EPS จริงต้องไปหาจาก transcript หรือ 10-K โดยตรง)</p>
+      <h2>4. Bull case / Bear case</h2>
+      <p><em>หมายเหตุ: ข้อมูลด้านล่างมาจาก web search (Rem) เท่านั้น เป็นข่าว/ความเห็นภายนอก ไม่ใช่ตัวเลขจาก 10-K หรือ transcript ที่ verify ได้</em></p>
+      <p><strong>Bull Case</strong></p>
+      <ul>
+        <li>Analyst หลายรายอัปเกรด rating หลังผลประกอบการ: Raymond James ขึ้นเป็น Strong Buy (price target $315→$400), Cantor Fitzgerald ขึ้นเป็น Overweight (price target $310→$370) โดยอ้างอิงมุมมอง Google Cloud และ Search ที่แข็งแรงขึ้น (source: web search 2026-08-09)</li>
+        <li>P/E (trailing) อยู่ที่ ~17.87x ซึ่งเป็นระดับต่ำสุดตั้งแต่ปี 2019 ตามรายงานข่าว — เป็นข้อมูลเชิงราคาที่น่าสนใจสำหรับแนว value investing แต่ต้องเทียบกับตัวเลข earnings จริงจาก 10-K ก่อนสรุปว่าถูกหรือแพง (source: web search 2026-08-09)</li>
+        <li>Alphabet ออกหุ้นกู้ investment-grade $25 พันล้านสำเร็จ โดยมียอดจองซื้อสูงถึง ~$115 พันล้าน สะท้อนว่าตลาดตราสารหนี้ยัง confident ในความสามารถชำระหนี้ของบริษัท แม้จะกู้เพิ่มเพื่อ AI capex (source: web search 2026-08-09)</li>
+      </ul>
+      <p><strong>Bear Case</strong></p>
+      <ul>
+        <li>Chief Scientist Jeff Dean และนักวิจัย AI ระดับสูงหลายคน (Sanjay Ghemawat, Quoc Le, Oriol Vinyals) ลาออกพร้อมกันเพื่อไปตั้งสตาร์ทอัพใหม่ ระหว่างเดียวกัน Demis Hassabis ก็ลงจากตำแหน่ง CEO ของ DeepMind — เป็นการเปลี่ยนแปลงผู้นำสาย AI ที่เกิดขึ้นพร้อมกันหลายคนในช่วงต้นเดือนสิงหาคม 2026 (source: web search 2026-08-09)</li>
+        <li>บริษัทปรับเพิ่ม capex guidance สูงสุดถึง $190 พันล้าน ซึ่งเป็นเหตุผลหลักที่หุ้นร่วง 7%+ ในวันประกาศผลประกอบการ (22 ก.ค. 2026) — นักลงทุนบางส่วนกังวลว่าการลงทุน AI infrastructure จำนวนมากนี้จะแปลงเป็น return ที่คุ้มค่าเมื่อไหร่ (source: web search 2026-08-09)</li>
+        <li>คดี antitrust: DOJ และกลุ่มอัยการรัฐยื่นอุทธรณ์คำตัดสินที่ให้ Google เจอแค่ behavioral remedies (ไม่ใช่ structural breakup) พร้อมยื่น cross-appeal ขอให้พิจารณาบังคับขาย Chrome ใหม่ คดีมีแนวโน้มลากยาวถึงต้นปี 2027 (source: web search 2026-08-09)</li>
+      </ul>
+      <h2>5. Kill conditions</h2>
+      <ul>
+        <li>ถ้าการลาออกของทีมผู้นำ AI ต่อเนื่องเป็นระลอกโดยไม่มีการแต่งตั้งผู้นำที่น่าเชื่อถือเข้ามาแทนที่ชัดเจน</li>
+        <li>ถ้า capex ด้าน AI infrastructure ยังเพิ่มขึ้นต่อเนื่องหลายไตรมาส โดยที่ Cloud/Search revenue ไม่โตตามในอัตราที่สมเหตุสมผล</li>
+        <li>ถ้าศาลอุทธรณ์ตัดสินให้ต้องทำ structural remedies จริง (เช่น บังคับขาย Chrome หรือแยกธุรกิจ) ซึ่งจะกระทบโครงสร้างธุรกิจหลักโดยตรง</li>
+      </ul>
+      <h2>6. What to ask before owning it</h2>
+      <ol>
+        <li>Capex $190 พันล้านที่เพิ่มขึ้น จะสร้าง return ให้ Cloud/AI business แค่ไหน และใช้เวลานานเท่าไหร่ถึงจะเห็นผล? (ต้องดู 10-K/transcript จริงเพื่อตอบ)</li>
+        <li>การลาออกของ Jeff Dean และทีม AI ระดับสูง กระทบ execution ของ Gemini roadmap มากแค่ไหนในทางปฏิบัติ ไม่ใช่แค่ headline?</li>
+        <li>ผลของคดี antitrust ถ้าออกมาแย่ที่สุด (บังคับขาย Chrome หรือแยกธุรกิจ) จะกระทบรายได้โฆษณาหลักแค่ไหน?</li>
+        <li>P/E ที่ต่ำสุดตั้งแต่ 2019 สะท้อนว่าตลาดกำลังกังวลอะไรเป็นพิเศษ หรือเป็นโอกาสที่แท้จริง — ต้องตรวจสอบตัวเลขกำไรจริงจาก 10-K ก่อนสรุป</li>
+        <li>ก่อนตัดสินใจ ควรกลับมาอ่าน 10-K และ earnings call transcript จริงของ Alphabet ก่อน เพราะ brief นี้ยังไม่มี source เหล่านั้นเลย — จะหาไฟล์มาเพิ่มใน <code>sources/GOOGL/</code> เมื่อไหร่?</li>
+      </ol>
+      <hr>
+      <p><em>Brief นี้เป็นสรุปข้อมูลเพื่อการวิจัยเท่านั้น ไม่ใช่คำแนะนำในการซื้อ/ขาย</em></p>
+    </div>
+    <a class="back-link" href="#gallery">← กลับไปหน้ารวม</a>
+  </section>
+
+  <section class="detail" id="NVDA">
+    <a class="back-link" href="#gallery">← กลับไปหน้ารวม</a>
+    <div class="brief">
+      <h1>NVDA — NVIDIA Corporation Stock Brief</h1>
+      <blockquote><p><strong>Gap สำคัญ:</strong> โปรเจกต์นี้ไม่มีโฟลเดอร์ <code>sources/NVDA/</code> เลย (มีแค่ <code>sources/AAPL/</code>) ทั้ง Reze (10-K) และ Megumin (earnings call) หาไฟล์ไม่เจอ จึงไม่มี source ที่ verify ได้สำหรับ section 1-3 ด้านล่าง — ไม่ขอแต่งข้อมูลจาก training memory มาแทนตามกฎ ถ้าต้องการ brief ที่ครบ ต้องเพิ่มไฟล์ <code>sources/NVDA/10-k-*.md</code> และ <code>sources/NVDA/q*-call.md</code> ก่อน</p></blockquote>
+      <h2>1. Company snapshot</h2>
+      <p><strong>ไม่มีข้อมูล</strong> — ไม่มีไฟล์ 10-K ใน <code>sources/NVDA/</code> ให้ Reze อ่าน (source: sources/NVDA/ — ไม่พบ) จึงไม่สามารถสรุปว่าบริษัททำอะไร ขายให้ใคร รายได้หลักมาจากไหน ได้อย่างมี source รองรับ ต้องเพิ่มไฟล์ 10-K ก่อน</p>
+      <h2>2. Fundamentals signal</h2>
+      <p><strong>ไม่มีข้อมูล</strong> — ไม่มี revenue trend / margin trend / balance sheet feel / capital allocation pattern ที่ verify ได้ เพราะไม่มีไฟล์ 10-K ต้นทาง (source: sources/NVDA/ — ไม่พบ)</p>
+      <h2>3. Latest earnings</h2>
+      <p><strong>ไม่มี earnings transcript ใน sources/NVDA/</strong> — Megumin หาไฟล์ <code>q*-call.md</code> ไม่เจอเลย จึงไม่มีตัวเลขไตรมาสล่าสุด, guidance, หรือ management commentary ที่มี source รองรับ ห้ามแต่งตัวเลขจากความจำ</p>
+      <h2>4. Bull case / Bear case</h2>
+      <p><em>หมายเหตุ: ข้อมูลด้านล่างมาจาก web search (Rem) เท่านั้น เป็นข่าว/ความเห็นภายนอก ไม่ใช่ตัวเลขจาก 10-K หรือ transcript ที่ verify ได้</em></p>
+      <p><strong>Bull Case</strong></p>
+      <ul>
+        <li>SpaceX ประกาศ (4 ส.ค. 2026) ใช้ Nvidia เป็น partner ด้าน AI compute แบบ exclusive สำหรับดาวเทียม AI "Starmind AI1" โดยใช้สถาปัตยกรรม Vera Rubin — เป็นสัญญาณว่า Nvidia ได้ position ตัวเองเป็น cornered resource ด้าน compute architecture ในโครงการ AI แนวหน้า แม้ปริมาณชิปที่จะซื้อจริงยังไม่เปิดเผย (source: web search 2026-08-09)</li>
+        <li>Analyst consensus (61 ราย จาก S&amp;P Global) ให้ rating Strong Buy 85% buy-rating, average price target ถูกปรับขึ้น 12% ในช่วง 3 เดือนล่าสุด สะท้อน demand ด้าน AI compute ที่ยังแข็งแรงต่อเนื่อง (source: web search 2026-08-09)</li>
+        <li>Backlog ระดับ ~$1 ล้านล้านดอลลาร์ (Blackwell + Vera Rubin ผ่านปี 2027) ตามที่ Jensen Huang ระบุใน GTC 2026 — ต้อง verify กับ 10-K ฉบับจริงอีกครั้งเพราะเป็นตัวเลขจาก press event ไม่ใช่ filing (source: web search 2026-08-09)</li>
+      </ul>
+      <p><strong>Bear Case</strong></p>
+      <ul>
+        <li>มีรายงาน (ยังไม่ยืนยันจาก Nvidia อย่างเป็นทางการ) ว่ากำลังพิจารณาลด HBM ใน Rubin Ultra รุ่นถัดไป เพราะ supply shortage ของหน่วยความจำทั่วโลก — ถ้าเป็นจริง อาจกระทบ performance หรือ margin ของสินค้ารุ่นถัดไป (source: web search 2026-08-09)</li>
+        <li>มีความเห็นจากนักลงทุนบางรายเรื่อง "circular financing" — ความเชื่อมโยงทางการเงินระหว่าง Nvidia กับลูกค้าที่ซื้อชิป ซึ่งอาจสร้างความเสี่ยงเชิงโครงสร้างหากการใช้จ่ายด้าน AI ชะลอตัว เป็นความเห็นจากแหล่งข่าว ยังไม่ใช่ข้อมูลยืนยันจาก Nvidia (source: web search 2026-08-09)</li>
+        <li>Consensus price target range กว้างมาก ($180 ถึง $500) สะท้อนว่านักวิเคราะห์เองก็ยังไม่ agree กันเรื่อง valuation ที่เหมาะสม ความไม่แน่นอนสูง (source: web search 2026-08-09)</li>
+      </ul>
+      <h2>5. Kill conditions</h2>
+      <ul>
+        <li>ถ้า SpaceX หรือลูกค้ารายใหญ่รายอื่นที่มีสัดส่วนคำสั่งซื้อสูง ประกาศลดหรือยกเลิกคำสั่งซื้อ GPU อย่างมีนัยสำคัญ</li>
+        <li>ถ้าข้อกังวลเรื่อง circular financing ถูกยืนยันเป็นทางการว่ากระทบคุณภาพรายได้จริง (ไม่ใช่แค่ความเห็นนักลงทุน)</li>
+        <li>ถ้า HBM supply shortage บังคับให้ Nvidia ต้อง downgrade spec ของผลิตภัณฑ์รุ่นถัดไปจริง และกระทบ margin ต่อเนื่องหลายไตรมาส</li>
+      </ul>
+      <h2>6. What to ask before owning it</h2>
+      <ol>
+        <li>รายได้ของ Nvidia กระจุกอยู่กับลูกค้ารายใหญ่ไม่กี่รายแค่ไหน (concentration risk) และ SpaceX partnership เปลี่ยนสัดส่วนนี้ไปทางไหน?</li>
+        <li>"Circular financing" ที่มีคนพูดถึงคืออะไรกันแน่ กระทบคุณภาพของรายได้จริงหรือเป็นแค่ความเห็น?</li>
+        <li>ถ้า HBM supply shortage บังคับให้ลด spec สินค้ารุ่นถัดไปจริง จะกระทบ demand หรือ margin แค่ไหน?</li>
+        <li>ราคาหุ้นตอนนี้เทียบกับ price target ที่กระจายกว้าง ($180-$500) — สะท้อนว่าตลาดยัง disagree กันเรื่อง valuation มากแค่ไหน แล้วผมเชื่อ scenario ไหน?</li>
+        <li>ก่อนตัดสินใจ ควรกลับมาอ่าน 10-K และ earnings call transcript จริงของ Nvidia ก่อน เพราะ brief นี้ยังไม่มี source เหล่านั้นเลย — จะหาไฟล์มาเพิ่มใน <code>sources/NVDA/</code> เมื่อไหร่?</li>
+      </ol>
+      <hr>
+      <p><em>Brief นี้เป็นสรุปข้อมูลเพื่อการวิจัยเท่านั้น ไม่ใช่คำแนะนำในการซื้อ/ขาย</em></p>
+    </div>
+    <a class="back-link" href="#gallery">← กลับไปหน้ารวม</a>
+  </section>
+
+</div>
+</body>
+</html>

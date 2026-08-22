@@ -1,0 +1,1165 @@
+<title>Galactic Shot</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<style>
+  :root{
+    --bg:#10141A;
+    --panel:rgba(24,28,35,.92);
+    --panel-border:rgba(255,255,255,.10);
+    --gold:#D8A857;
+    --laser:#7FB0E0;
+    --ufo:#7FCB9E;
+    --danger:#DD8570;
+    --text:#EEF1F5;
+    --text-dim:#939AA6;
+    --grid:rgba(255,255,255,.05);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    min-height:100vh;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Courier New',Courier,monospace;
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    padding:28px 16px 40px;
+  }
+  .stage{
+    width:min(940px,100%);
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+  }
+  header{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+  h1{
+    margin:0;
+    font-size:clamp(22px,3.4vw,32px);
+    letter-spacing:.16em;
+    font-weight:700;
+    color:var(--text);
+    text-wrap:balance;
+  }
+  .subtitle{
+    margin:0;
+    font-size:12px;
+    letter-spacing:.14em;
+    color:var(--text-dim);
+    text-transform:uppercase;
+  }
+  .layout{
+    display:flex;
+    gap:16px;
+    flex-wrap:wrap;
+    position:relative;
+  }
+  canvas{
+    display:block;
+    width:690px;
+    max-width:100%;
+    aspect-ratio:690/410;
+    height:auto;
+    background:#000;
+    border:1px solid var(--panel-border);
+    border-radius:4px;
+    box-shadow:0 0 20px rgba(0,0,0,.35) inset;
+  }
+  .panel{
+    width:215px;
+    flex-shrink:0;
+    background:var(--panel);
+    border:1px solid var(--panel-border);
+    border-radius:4px;
+    padding:14px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+  .badge{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    padding:6px 11px;
+    border-radius:3px;
+    font-size:12px;
+    letter-spacing:.1em;
+    font-weight:700;
+    width:fit-content;
+    border:1px solid currentColor;
+  }
+  .badge.d1{color:var(--ufo);background:rgba(127,203,158,.10);}
+  .badge.d2{color:var(--gold);background:rgba(216,168,87,.10);}
+  .badge.d3{color:var(--danger);background:rgba(221,133,112,.10);}
+  .stats{
+    display:grid;
+    grid-template-columns:1fr auto;
+    gap:7px 8px;
+    font-size:12.5px;
+  }
+  .stats dt{color:var(--text-dim);letter-spacing:.02em;}
+  .stats dd{margin:0;text-align:right;font-variant-numeric:tabular-nums;color:var(--text);}
+  .divider{height:1px;background:var(--panel-border);border:0;margin:0;}
+  .angle-row{display:flex;flex-direction:column;gap:7px;}
+  .angle-label{
+    display:flex;
+    justify-content:space-between;
+    font-size:12.5px;
+    color:var(--text-dim);
+    letter-spacing:.02em;
+  }
+  .angle-label b{color:var(--gold);font-size:14px;font-variant-numeric:tabular-nums;}
+  .angle-hint{
+    font-size:11.5px;
+    line-height:1.55;
+    color:var(--text-dim);
+    letter-spacing:.01em;
+  }
+  .angle-input{
+    font-family:inherit;
+    width:100%;
+    font-size:20px;
+    font-weight:700;
+    text-align:center;
+    letter-spacing:.06em;
+    color:var(--gold);
+    background:rgba(0,0,0,.35);
+    border:1px solid var(--panel-border);
+    border-radius:3px;
+    padding:8px 6px;
+    outline:none;
+    font-variant-numeric:tabular-nums;
+  }
+  .angle-input::-webkit-outer-spin-button,
+  .angle-input::-webkit-inner-spin-button{
+    -webkit-appearance:none;
+    margin:0;
+  }
+  .angle-input{appearance:textfield;-moz-appearance:textfield;}
+  .angle-input:focus{
+    border-color:var(--gold);
+    box-shadow:0 0 0 2px rgba(216,168,87,.25);
+  }
+  .math-box{
+    background:rgba(0,0,0,.28);
+    border:1px solid var(--panel-border);
+    border-radius:3px;
+    padding:10px 11px;
+    font-size:12.5px;
+    line-height:1.85;
+    color:var(--laser);
+    white-space:pre;
+  }
+  .math-box .k{color:var(--text-dim);}
+  .btn{
+    font-family:inherit;
+    font-size:13px;
+    letter-spacing:.06em;
+    font-weight:700;
+    padding:10px 10px;
+    border-radius:3px;
+    cursor:pointer;
+    text-align:center;
+    transition:filter .15s, transform .1s;
+  }
+  .btn:active{transform:translateY(1px);}
+  .btn:disabled{opacity:.35;cursor:not-allowed;filter:none;}
+  .btn-fire{
+    background:var(--gold);
+    color:#241a00;
+    border:1px solid var(--gold);
+  }
+  .btn-fire:not(:disabled):hover{filter:brightness(1.12);}
+  .btn-next{
+    background:transparent;
+    color:var(--ufo);
+    border:1px solid var(--ufo);
+  }
+  .btn-next:not(:disabled):hover{background:rgba(127,203,158,.10);}
+  .btn-restart{
+    background:transparent;
+    color:var(--text-dim);
+    border:1px solid var(--panel-border);
+  }
+  .btn-restart:hover{color:var(--text);border-color:var(--text-dim);}
+  .feedback{
+    border-radius:3px;
+    border:1px solid var(--panel-border);
+    padding:10px 10px;
+    font-size:12.5px;
+    line-height:1.55;
+    background:rgba(255,255,255,.02);
+    color:var(--text-dim);
+    min-height:36px;
+  }
+  .feedback.hit{border-color:var(--ufo);color:var(--ufo);background:rgba(127,203,158,.10);}
+  .feedback.miss{border-color:var(--danger);color:var(--danger);background:rgba(221,133,112,.10);}
+  .score{
+    display:flex;
+    justify-content:space-between;
+    font-size:12px;
+    color:var(--text-dim);
+    letter-spacing:.02em;
+  }
+  .score b{color:var(--text);font-variant-numeric:tabular-nums;}
+  .overlay{
+    position:absolute;
+    inset:0;
+    width:100%;
+    background:rgba(2,6,16,.92);
+    border:1px solid var(--panel-border);
+    border-radius:4px;
+    display:none;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    text-align:center;
+    padding:20px;
+  }
+  .overlay.show{display:flex;}
+  .overlay h2{
+    margin:0;
+    font-size:26px;
+    letter-spacing:.08em;
+    color:var(--gold);
+    text-wrap:balance;
+  }
+  .overlay p{margin:0;color:var(--text);font-size:14px;}
+  .overlay .score-final{color:var(--laser);font-size:16px;font-variant-numeric:tabular-nums;}
+  .overlay-danger h2{color:var(--danger);}
+  @media (prefers-reduced-motion:reduce){
+    .btn{transition:none;}
+  }
+
+  /* ---- mobile: portrait (canvas on top, panel below, full width) ---- */
+  @media (max-width:760px) and (orientation:portrait){
+    body{padding:14px 10px 24px;align-items:stretch;}
+    .stage{width:100%;gap:12px;}
+    header{flex-direction:column;gap:2px;}
+    .layout{flex-direction:column;}
+    canvas{width:100%;}
+    .panel{width:100%;}
+  }
+
+  /* ---- mobile: landscape (canvas + panel side by side, shrunk header) ---- */
+  @media (max-height:520px) and (orientation:landscape){
+    body{padding:8px;align-items:center;}
+    .stage{width:100%;gap:8px;}
+    header{gap:6px;}
+    h1{font-size:15px;letter-spacing:.2em;}
+    .subtitle{display:none;}
+    .layout{flex-wrap:nowrap;align-items:flex-start;}
+    canvas{width:auto;height:min(84vh,410px);flex:1 1 auto;min-width:0;}
+    .panel{
+      width:180px;
+      flex-shrink:0;
+      max-height:84vh;
+      overflow-y:auto;
+      gap:9px;
+      padding:10px;
+    }
+    .math-box{font-size:10px;line-height:1.55;padding:7px 8px;}
+    .btn{padding:7px 8px;font-size:11px;}
+  }
+</style>
+
+<div class="stage">
+  <header>
+    <div>
+      <h1>GALACTIC SHOT</h1>
+      <p class="subtitle">ballistic trajectory · deep space intercept</p>
+    </div>
+  </header>
+
+  <div class="layout">
+    <canvas id="game" width="690" height="410"></canvas>
+
+    <div class="panel">
+      <span class="badge" id="levelBadge">โจทย์ 1/10 · ง่าย</span>
+
+      <dl class="stats">
+        <dt>ระยะทาง (a)</dt><dd id="statDist">-- m</dd>
+        <dt>ความสูง UFO (b)</dt><dd id="statHeight">-- m</dd>
+        <dt>ความเร็วเลเซอร์</dt><dd id="statSpeed">-- m/s</dd>
+      </dl>
+
+      <hr class="divider">
+
+      <div class="math-box" id="mathBox"></div>
+
+      <div class="angle-row">
+        <div class="angle-label"><span>คำตอบ c = ? (ระยะตรงถึง UFO)</span></div>
+        <input type="number" id="answerInput" class="angle-input" step="0.1" inputmode="decimal" aria-label="คำตอบระยะตรง c">
+        <p class="angle-hint">ตอบถูก = ยานเล็งเองแล้วยิงโดนทันที! ตอบผิดได้ไม่เกิน 3 ครั้ง ไม่งั้น UFO จะยิงเลเซอร์กลับใส่ยาน!</p>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <button class="btn btn-fire" id="btnFire">⚡ ยิง!</button>
+        <button class="btn btn-next" id="btnNext">โจทย์ถัดไป →</button>
+        <button class="btn btn-restart" id="btnRestart">↺ เริ่มใหม่</button>
+      </div>
+
+      <div class="feedback" id="feedback">คำนวณ c จาก a² + b² = c² แล้วพิมพ์คำตอบก่อนยิง</div>
+
+      <div class="score"><span>คะแนน</span><b><span id="scoreHits">0</span> ถูก / <span id="scoreAttempts">0</span> ครั้ง</b></div>
+    </div>
+
+    <div class="overlay" id="overlay">
+      <h2>🛸 ภารกิจสำเร็จ!</h2>
+      <p>ทำลาย UFO ครบทั้ง 10 โจทย์เรียบร้อยแล้ว</p>
+      <p class="score-final" id="finalScore">0 ถูก / 0 ครั้ง</p>
+      <button class="btn btn-restart" id="btnOverlayRestart" style="width:160px;">↺ เล่นใหม่</button>
+    </div>
+
+    <div class="overlay overlay-danger" id="defeatOverlay">
+      <h2>💥 ยานถูกทำลาย!</h2>
+      <p>ตอบผิดเกิน 3 ครั้ง UFO เลยยิงเลเซอร์ใส่ยานจนระเบิด ต้องเริ่มใหม่ตั้งแต่โจทย์ 1</p>
+      <p class="score-final" id="defeatScore">0 ถูก / 0 ครั้ง</p>
+      <button class="btn btn-restart" id="btnDefeatRestart" style="width:160px;">↺ เริ่มเกมใหม่</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var canvas = document.getElementById('game');
+  var ctx = canvas.getContext('2d');
+  var W = canvas.width, H = canvas.height;
+
+  var COLORS = {
+    gold:'#D8A857', laser:'#7FB0E0', ufo:'#7FCB9E', danger:'#DD8570',
+    text:'#EEF1F5', textDim:'#939AA6', grid:'rgba(255,255,255,0.05)'
+  };
+
+  var CFG = {
+    GX: 58, GY: 345,
+    PPM: 12,
+    DT: 0.022,
+    G: 9.81,
+    LAUNCH_Y0: 1.4,
+    HIT_RADIUS: 28,
+    TARGET_X: 447,
+    TARGET_Y: 122
+  };
+
+  var LEVELS = [
+    { distance:8,  height:6,  speed:25, label:'ง่าย', cls:'d1' },
+    { distance:12, height:5,  speed:27, label:'ง่าย', cls:'d1' },
+    { distance:12, height:9,  speed:28, label:'ง่าย', cls:'d1' },
+    { distance:15, height:8,  speed:30, label:'กลาง', cls:'d2' },
+    { distance:16, height:12, speed:32, label:'กลาง', cls:'d2' },
+    { distance:20, height:15, speed:35, label:'กลาง', cls:'d2' },
+    { distance:21, height:20, speed:37, label:'กลาง', cls:'d2' },
+    { distance:24, height:18, speed:39, label:'ยาก',  cls:'d3' },
+    { distance:28, height:21, speed:42, label:'ยาก',  cls:'d3' },
+    { distance:32, height:24, speed:45, label:'ยาก',  cls:'d3' }
+  ];
+
+  // ---------- persistent starfield ----------
+  var stars = [];
+  (function initStars(){
+    for (var i=0;i<80;i++){
+      stars.push({
+        x: Math.random()*W,
+        y: Math.random()*(CFG.GY-10),
+        r: Math.random()*1.6+0.3,
+        a: Math.random()*0.6+0.3
+      });
+    }
+  })();
+
+  // ---------- state ----------
+  var state = {
+    levelIndex: 0,
+    hits: 0,
+    attempts: 0,
+    ufoAlive: true,
+    laser: null,      // {t, x, y}
+    trail: [],
+    explosion: null,  // {x,y,frame,dur,emoji,particles}
+    missionDone: false,
+    wrongAttempts: 0,
+    answerCorrect: false,
+    attack: null      // {frame,beamDur,totalDur,ufoX,ufoY,shipX,shipY,particles}
+  };
+
+  function level(){ return LEVELS[state.levelIndex]; }
+
+  function ufoScreenPos(){
+    return { x: CFG.TARGET_X, y: CFG.TARGET_Y };
+  }
+
+  function pivotScreenPos(){
+    return { x: CFG.GX, y: CFG.GY - CFG.LAUNCH_Y0*CFG.PPM };
+  }
+
+  // ---------- UI refs ----------
+  var el = {
+    badge: document.getElementById('levelBadge'),
+    statDist: document.getElementById('statDist'),
+    statHeight: document.getElementById('statHeight'),
+    statSpeed: document.getElementById('statSpeed'),
+    answerInput: document.getElementById('answerInput'),
+    mathBox: document.getElementById('mathBox'),
+    btnFire: document.getElementById('btnFire'),
+    btnNext: document.getElementById('btnNext'),
+    btnRestart: document.getElementById('btnRestart'),
+    feedback: document.getElementById('feedback'),
+    scoreHits: document.getElementById('scoreHits'),
+    scoreAttempts: document.getElementById('scoreAttempts'),
+    overlay: document.getElementById('overlay'),
+    finalScore: document.getElementById('finalScore'),
+    btnOverlayRestart: document.getElementById('btnOverlayRestart'),
+    defeatOverlay: document.getElementById('defeatOverlay'),
+    defeatScore: document.getElementById('defeatScore'),
+    btnDefeatRestart: document.getElementById('btnDefeatRestart')
+  };
+
+  function refreshPanel(){
+    var lv = level();
+    el.badge.className = 'badge ' + lv.cls;
+    el.badge.textContent = 'โจทย์ ' + (state.levelIndex+1) + '/' + LEVELS.length + ' · ' + lv.label;
+    el.statDist.textContent = lv.distance.toFixed(1) + ' m';
+    el.statHeight.textContent = lv.height.toFixed(1) + ' m';
+    el.statSpeed.textContent = lv.speed.toFixed(1) + ' m/s';
+    updateMathBox();
+    var busy = !!state.laser || !!state.explosion || !!state.attack;
+    el.btnFire.disabled = busy || !state.ufoAlive || state.missionDone;
+    el.btnNext.disabled = busy || state.missionDone;
+    el.answerInput.disabled = busy;
+  }
+
+  function clamp(v, min, max){ return Math.min(max, Math.max(min, v)); }
+
+  function correctAnswer(){
+    var lv = level();
+    return Math.sqrt(lv.distance*lv.distance + lv.height*lv.height);
+  }
+
+  function solveAngle(dx, dy, v0){
+    var g = CFG.G;
+    var A = g*dx*dx/(2*v0*v0);
+    var B = -dx;
+    var C = dy + g*dx*dx/(2*v0*v0);
+    var disc = B*B - 4*A*C;
+    if (disc < 0) return null;
+    var sq = Math.sqrt(disc);
+    var t1 = (-B+sq)/(2*A);
+    var t2 = (-B-sq)/(2*A);
+    var angles = [t1, t2].map(function(t){ return Math.atan(t)*180/Math.PI; })
+      .filter(function(a){ return a >= 1 && a <= 89; });
+    if (!angles.length) return null;
+    return Math.min.apply(null, angles);
+  }
+
+  function idealAngleForLevel(){
+    var lv = level();
+    var p = pivotScreenPos();
+    var ufo = ufoScreenPos();
+    var dx = (ufo.x - p.x) / CFG.PPM;
+    var dy = (CFG.GY - ufo.y) / CFG.PPM - CFG.LAUNCH_Y0;
+    var ang = solveAngle(dx, dy, lv.speed);
+    return ang === null ? 45 : ang;
+  }
+
+  function updateMathBox(){
+    var lv = level();
+    var a = lv.distance, b = lv.height;
+    var aSq = a*a, bSq = b*b, cSq = aSq+bSq;
+    el.mathBox.innerHTML =
+      '<span class="k">a</span>² + <span class="k">b</span>² = <span class="k">c</span>²\n' +
+      a.toFixed(0) + '² + ' + b.toFixed(0) + '² = ' + aSq.toFixed(0) + ' + ' + bSq.toFixed(0) + '\n' +
+      '<span class="k">c</span>² = ' + cSq.toFixed(0) + '  →  c = √' + cSq.toFixed(0) + ' = ?';
+  }
+
+  function setFeedback(text, cls){
+    el.feedback.textContent = text;
+    el.feedback.className = 'feedback' + (cls ? ' '+cls : '');
+  }
+
+  function updateScore(){
+    el.scoreHits.textContent = state.hits;
+    el.scoreAttempts.textContent = state.attempts;
+  }
+
+  // ---------- actions ----------
+  function fire(){
+    if (state.laser || state.explosion || state.attack || !state.ufoAlive || state.missionDone) return;
+
+    var ansRaw = parseFloat(el.answerInput.value);
+    var isCorrect = !isNaN(ansRaw) && Math.abs(ansRaw - correctAnswer()) < 0.5;
+
+    state.attempts++;
+    updateScore();
+
+    var idealAngle = idealAngleForLevel();
+
+    if (!isCorrect){
+      state.wrongAttempts++;
+      if (state.wrongAttempts > 3){
+        triggerDefeat();
+        return;
+      }
+      state.answerCorrect = false;
+      state.laser = { t:0, x:0, y:0, angleDeg: clamp(idealAngle-14, 1, 89) };
+      state.trail = [];
+      setFeedback('❌ คำตอบยังไม่ถูก กระสุนจะไม่มีทางโดน (ผิดไปแล้ว ' + state.wrongAttempts + '/3 ครั้ง)', 'miss');
+      refreshPanel();
+      return;
+    }
+
+    state.wrongAttempts = 0;
+    state.answerCorrect = true;
+    state.laser = { t:0, x:0, y:0, angleDeg: idealAngle };
+    state.trail = [];
+    setFeedback('✅ คำตอบถูกต้อง! ยานเล็งเองที่มุม ' + idealAngle.toFixed(0) + '° แล้วยิงออกไป...', 'hit');
+    refreshPanel();
+  }
+
+  function triggerDefeat(){
+    var p = pivotScreenPos();
+    var ufo = ufoScreenPos();
+    state.laser = null;
+    state.attack = {
+      frame: 0,
+      beamDur: 10,
+      totalDur: 40,
+      ufoX: ufo.x, ufoY: ufo.y,
+      shipX: p.x, shipY: p.y,
+      particles: null
+    };
+    setFeedback('💥 ตอบผิดเกิน 3 ครั้ง! UFO ยิงเลเซอร์กลับใส่ยาน...', 'miss');
+    refreshPanel();
+  }
+
+  function nextLevel(){
+    if (state.laser || state.explosion || state.attack || state.missionDone) return;
+    if (state.levelIndex < LEVELS.length-1){
+      state.levelIndex++;
+      state.ufoAlive = true;
+      state.laser = null;
+      state.trail = [];
+      state.explosion = null;
+      state.wrongAttempts = 0;
+      state.answerCorrect = false;
+      el.answerInput.value = '';
+      setFeedback('คำนวณ c จาก a² + b² = c² แล้วพิมพ์คำตอบก่อนยิง', '');
+      refreshPanel();
+    } else {
+      state.missionDone = true;
+      el.finalScore.textContent = state.hits + ' ถูก / ' + state.attempts + ' ครั้ง';
+      el.overlay.classList.add('show');
+      refreshPanel();
+    }
+  }
+
+  function restart(){
+    state.levelIndex = 0;
+    state.hits = 0;
+    state.attempts = 0;
+    state.ufoAlive = true;
+    state.laser = null;
+    state.trail = [];
+    state.explosion = null;
+    state.missionDone = false;
+    state.wrongAttempts = 0;
+    state.answerCorrect = false;
+    state.attack = null;
+    el.answerInput.value = '';
+    el.overlay.classList.remove('show');
+    el.defeatOverlay.classList.remove('show');
+    setFeedback('คำนวณ c จาก a² + b² = c² แล้วพิมพ์คำตอบก่อนยิง', '');
+    updateScore();
+    refreshPanel();
+  }
+
+  el.answerInput.addEventListener('keydown', function(e){
+    if (e.key === 'Enter'){ el.answerInput.blur(); fire(); }
+  });
+  el.btnFire.addEventListener('click', fire);
+  el.btnNext.addEventListener('click', nextLevel);
+  el.btnRestart.addEventListener('click', restart);
+  el.btnOverlayRestart.addEventListener('click', restart);
+  el.btnDefeatRestart.addEventListener('click', restart);
+
+  // ---------- physics / simulation step ----------
+  function stepLaser(){
+    if (!state.laser) return;
+    var lv = level();
+    var laser = state.laser;
+    laser.t += CFG.DT;
+
+    var rad = laser.angleDeg * Math.PI/180;
+    var x = lv.speed*Math.cos(rad)*laser.t;
+    var y = CFG.LAUNCH_Y0 + lv.speed*Math.sin(rad)*laser.t - 0.5*CFG.G*laser.t*laser.t;
+
+    var sx = CFG.GX + x*CFG.PPM;
+    var sy = CFG.GY - y*CFG.PPM;
+    laser.px = laser.x; laser.py = laser.y;
+    laser.x = sx; laser.y = sy;
+
+    state.trail.push({x:sx, y:sy, a:1});
+    if (state.trail.length > 40) state.trail.shift();
+    for (var i=0;i<state.trail.length;i++){ state.trail[i].a *= 0.94; }
+
+    var ufo = ufoScreenPos();
+    var dx = sx-ufo.x, dy = sy-ufo.y;
+    var dist = Math.sqrt(dx*dx+dy*dy);
+
+    if (state.ufoAlive && state.answerCorrect && dist < CFG.HIT_RADIUS){
+      state.hits++;
+      state.ufoAlive = false;
+      state.laser = null;
+      startExplosion(ufo.x, ufo.y);
+      setFeedback('🎯 โดนแล้ว! UFO ระเบิด!', 'hit');
+      updateScore();
+      refreshPanel();
+      return;
+    }
+
+    if (sy > H+20 || sx > W+40 || sy < -40){
+      state.laser = null;
+      setFeedback('❌ พลาด! ลองปรับมุมใหม่', 'miss');
+      refreshPanel();
+    }
+  }
+
+  function startExplosion(x,y){
+    var particles = [];
+    for (var i=0;i<16;i++){
+      var a = Math.random()*Math.PI*2;
+      var sp = 1.5+Math.random()*2.5;
+      particles.push({
+        x:x, y:y,
+        vx:Math.cos(a)*sp, vy:Math.sin(a)*sp,
+        life:1, col: (i%3===0)?COLORS.ufo:(i%3===1)?COLORS.laser:'#ffffff'
+      });
+    }
+    state.explosion = {
+      x:x, y:y, frame:0, dur:26,
+      emoji: Math.random()<0.5 ? '💥' : '⚡',
+      particles: particles
+    };
+  }
+
+  function stepExplosion(){
+    var ex = state.explosion;
+    if (!ex) return;
+    ex.frame++;
+    for (var i=0;i<ex.particles.length;i++){
+      var p = ex.particles[i];
+      p.x += p.vx; p.y += p.vy;
+      p.vx *= 0.94; p.vy *= 0.94;
+      p.life -= 1/ex.dur;
+    }
+    if (ex.frame > ex.dur){
+      state.explosion = null;
+      refreshPanel();
+    }
+  }
+
+  function stepAttack(){
+    var atk = state.attack;
+    if (!atk) return;
+    atk.frame++;
+
+    if (atk.frame === atk.beamDur){
+      var particles = [];
+      for (var i=0;i<16;i++){
+        var a = Math.random()*Math.PI*2;
+        var sp = 1.5+Math.random()*2.5;
+        particles.push({
+          x:atk.shipX, y:atk.shipY,
+          vx:Math.cos(a)*sp, vy:Math.sin(a)*sp,
+          life:1, col: (i%3===0)?COLORS.danger:(i%3===1)?COLORS.gold:'#ffffff'
+        });
+      }
+      atk.particles = particles;
+    }
+
+    if (atk.particles){
+      for (var j=0;j<atk.particles.length;j++){
+        var p = atk.particles[j];
+        p.x += p.vx; p.y += p.vy;
+        p.vx *= 0.94; p.vy *= 0.94;
+        p.life -= 1/(atk.totalDur-atk.beamDur);
+      }
+    }
+
+    if (atk.frame > atk.totalDur){
+      state.attack = null;
+      el.defeatScore.textContent = state.hits + ' ถูก / ' + state.attempts + ' ครั้ง';
+      el.defeatOverlay.classList.add('show');
+      refreshPanel();
+    }
+  }
+
+  // ---------- drawing ----------
+  function drawBackground(){
+    var g = ctx.createLinearGradient(0,0,0,H);
+    g.addColorStop(0,'#0A0C10');
+    g.addColorStop(0.6,'#10141A');
+    g.addColorStop(1,'#141922');
+    ctx.fillStyle = g;
+    ctx.fillRect(0,0,W,H);
+
+    var neb1 = ctx.createRadialGradient(140,90,10,140,90,190);
+    neb1.addColorStop(0,'rgba(90,70,110,0.10)');
+    neb1.addColorStop(1,'rgba(90,70,110,0)');
+    ctx.fillStyle = neb1;
+    ctx.fillRect(0,0,W,H);
+
+    var neb2 = ctx.createRadialGradient(520,140,10,520,140,220);
+    neb2.addColorStop(0,'rgba(70,100,120,0.08)');
+    neb2.addColorStop(1,'rgba(70,100,120,0)');
+    ctx.fillStyle = neb2;
+    ctx.fillRect(0,0,W,H);
+
+    for (var i=0;i<stars.length;i++){
+      var s = stars[i];
+      ctx.globalAlpha = s.a;
+      ctx.fillStyle = '#EEF1F5';
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function drawGround(){
+    var g = ctx.createLinearGradient(0,CFG.GY,0,H);
+    g.addColorStop(0,'#2B2A33');
+    g.addColorStop(1,'#17161C');
+    ctx.fillStyle = g;
+    ctx.fillRect(0,CFG.GY,W,H-CFG.GY);
+    ctx.strokeStyle = 'rgba(255,255,255,0.14)';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(0,CFG.GY); ctx.lineTo(W,CFG.GY); ctx.stroke();
+  }
+
+  function drawGrid(){
+    ctx.strokeStyle = COLORS.grid;
+    ctx.fillStyle = COLORS.textDim;
+    ctx.font = '11px "Courier New", monospace';
+    ctx.lineWidth = 1;
+
+    for (var m=0; CFG.GX+m*CFG.PPM < W; m+=5){
+      var x = CFG.GX + m*CFG.PPM;
+      ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,CFG.GY); ctx.stroke();
+      if (m>0) ctx.fillText(m+'m', x-8, CFG.GY+13);
+    }
+    for (var h=0; CFG.GY-h*CFG.PPM > 0; h+=2){
+      var y = CFG.GY - h*CFG.PPM;
+      ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke();
+      if (h>0) ctx.fillText(h+'m', 4, y-3);
+    }
+  }
+
+  function drawRefLabel(cx, cy, text){
+    ctx.save();
+    ctx.font = '11px "Courier New", monospace';
+    var padX = 5, boxH = 16;
+    var w = ctx.measureText(text).width;
+    var bx = cx - (w+padX*2)/2;
+    var by = cy - boxH/2;
+    ctx.fillStyle = 'rgba(16,20,26,0.82)';
+    ctx.strokeStyle = 'rgba(255,255,255,0.14)';
+    ctx.lineWidth = 1;
+    ctx.fillRect(bx, by, w+padX*2, boxH);
+    ctx.strokeRect(bx, by, w+padX*2, boxH);
+    ctx.fillStyle = COLORS.text;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(text, cx, cy+0.5);
+    ctx.restore();
+  }
+
+  function drawReference(){
+    var pivot = pivotScreenPos();
+    var ufo = ufoScreenPos();
+    var lv = level();
+
+    ctx.setLineDash([4,4]);
+    ctx.strokeStyle = 'rgba(127,176,224,0.32)';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(pivot.x, pivot.y); ctx.lineTo(ufo.x, pivot.y); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(ufo.x, pivot.y); ctx.lineTo(ufo.x, ufo.y); ctx.stroke();
+
+    ctx.strokeStyle = 'rgba(216,168,87,0.35)';
+    ctx.beginPath(); ctx.moveTo(pivot.x, pivot.y); ctx.lineTo(ufo.x, ufo.y); ctx.stroke();
+    ctx.setLineDash([]);
+
+    drawRefLabel((pivot.x+ufo.x)/2, pivot.y, lv.distance.toFixed(0)+' m');
+    drawRefLabel(ufo.x, (pivot.y+ufo.y)/2, lv.height.toFixed(0)+' m');
+
+    var rad = displayAngleDeg()*Math.PI/180;
+    ctx.strokeStyle = COLORS.gold;
+    ctx.lineWidth = 1.4;
+    ctx.beginPath();
+    ctx.arc(pivot.x, pivot.y, 26, -rad, 0);
+    ctx.stroke();
+  }
+
+  function displayAngleDeg(){
+    return state.laser ? state.laser.angleDeg : idealAngleForLevel();
+  }
+
+  function drawSpaceship(now){
+    var p = pivotScreenPos();
+    var rad = displayAngleDeg()*Math.PI/180;
+    var flicker = 0.85 + 0.15*Math.sin(now*0.012);
+
+    // ground shadow
+    ctx.fillStyle = 'rgba(0,0,0,0.32)';
+    ctx.beginPath();
+    ctx.ellipse(p.x, CFG.GY+3, 20, 4.5, 0, 0, Math.PI*2);
+    ctx.fill();
+
+    ctx.save();
+    ctx.translate(p.x, p.y);
+    ctx.scale(1.4, 1.4);
+    ctx.translate(-p.x, -p.y);
+
+    // engine flame (two-layer, flickering)
+    var eg = ctx.createRadialGradient(p.x, p.y+17, 1, p.x, p.y+17, 18*flicker);
+    eg.addColorStop(0, 'rgba(232,170,110,'+(0.6*flicker).toFixed(3)+')');
+    eg.addColorStop(0.5, 'rgba(216,140,90,'+(0.32*flicker).toFixed(3)+')');
+    eg.addColorStop(1, 'rgba(216,140,90,0)');
+    ctx.fillStyle = eg;
+    ctx.beginPath(); ctx.arc(p.x, p.y+17, 18*flicker, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = 'rgba(255,214,166,'+(0.75*flicker).toFixed(3)+')';
+    ctx.beginPath(); ctx.ellipse(p.x, p.y+13, 3.4, 7*flicker, 0, 0, Math.PI*2); ctx.fill();
+
+    // swept side fins
+    var finGradL = ctx.createLinearGradient(p.x-24,p.y,p.x-6,p.y);
+    finGradL.addColorStop(0,'#4c5568'); finGradL.addColorStop(1,'#8a96ab');
+    ctx.fillStyle = finGradL;
+    ctx.beginPath();
+    ctx.moveTo(p.x-6,p.y-6); ctx.lineTo(p.x-24,p.y+4); ctx.lineTo(p.x-20,p.y+11); ctx.lineTo(p.x-6,p.y+4);
+    ctx.closePath(); ctx.fill();
+    var finGradR = ctx.createLinearGradient(p.x+6,p.y,p.x+24,p.y);
+    finGradR.addColorStop(0,'#8a96ab'); finGradR.addColorStop(1,'#4c5568');
+    ctx.fillStyle = finGradR;
+    ctx.beginPath();
+    ctx.moveTo(p.x+6,p.y-6); ctx.lineTo(p.x+24,p.y+4); ctx.lineTo(p.x+20,p.y+11); ctx.lineTo(p.x+6,p.y+4);
+    ctx.closePath(); ctx.fill();
+
+    // legs with foot pads
+    ctx.fillStyle = '#6b7690';
+    ctx.beginPath(); ctx.moveTo(p.x-13,p.y+7); ctx.lineTo(p.x-21,p.y+19); ctx.lineTo(p.x-8,p.y+13); ctx.closePath(); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(p.x+13,p.y+7); ctx.lineTo(p.x+21,p.y+19); ctx.lineTo(p.x+8,p.y+13); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = '#4c5568';
+    ctx.beginPath(); ctx.ellipse(p.x-21,p.y+19.5,4,2,0,0,Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(p.x+21,p.y+19.5,4,2,0,0,Math.PI*2); ctx.fill();
+
+    // barrel
+    ctx.save();
+    ctx.translate(p.x, p.y);
+    ctx.rotate(-rad);
+    ctx.fillStyle = '#5b6478';
+    ctx.beginPath(); ctx.arc(0,0,5,0,Math.PI*2); ctx.fill();
+    var bg = ctx.createLinearGradient(0,-3,0,3);
+    bg.addColorStop(0,'#dbe3ee'); bg.addColorStop(0.5,'#aab4c6'); bg.addColorStop(1,'#6b7690');
+    ctx.fillStyle = bg;
+    ctx.fillRect(3,-3,29,6);
+    ctx.strokeStyle = 'rgba(20,24,30,0.3)';
+    ctx.lineWidth = 0.6;
+    ctx.strokeRect(3,-3,29,6);
+    ctx.fillStyle = COLORS.laser;
+    ctx.shadowColor = COLORS.laser; ctx.shadowBlur = 6*flicker;
+    ctx.beginPath(); ctx.arc(32,0,3.6,0,Math.PI*2); ctx.fill();
+    ctx.shadowBlur = 0;
+    ctx.restore();
+
+    // hull body
+    var bodyGrad = ctx.createLinearGradient(p.x-17,p.y-11,p.x+17,p.y+11);
+    bodyGrad.addColorStop(0,'#8f9bb0');
+    bodyGrad.addColorStop(0.45,'#dbe3ee');
+    bodyGrad.addColorStop(0.55,'#c9d4e2');
+    bodyGrad.addColorStop(1,'#5f6a82');
+    ctx.fillStyle = bodyGrad;
+    ctx.beginPath();
+    ctx.ellipse(p.x, p.y, 18, 10.5, 0, 0, Math.PI*2);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    // panel seam lines
+    ctx.strokeStyle = 'rgba(70,80,100,0.3)';
+    ctx.lineWidth = 0.8;
+    ctx.beginPath(); ctx.moveTo(p.x-6,p.y-8); ctx.lineTo(p.x-6,p.y+8); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(p.x+6,p.y-8); ctx.lineTo(p.x+6,p.y+8); ctx.stroke();
+
+    // canopy / cockpit glass
+    var domeGrad = ctx.createRadialGradient(p.x-2,p.y-3,0.5,p.x+2,p.y-1,7);
+    domeGrad.addColorStop(0,'#eef6ff');
+    domeGrad.addColorStop(0.45, COLORS.laser);
+    domeGrad.addColorStop(1,'#2c5a80');
+    ctx.fillStyle = domeGrad;
+    ctx.beginPath(); ctx.ellipse(p.x+2, p.y-1, 5.4, 4.4, 0, 0, Math.PI*2); ctx.fill();
+    ctx.strokeStyle = 'rgba(20,30,45,0.5)';
+    ctx.lineWidth = 0.8;
+    ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.beginPath(); ctx.ellipse(p.x, p.y-2.6, 2, 1, -0.4, 0, Math.PI*2); ctx.fill();
+
+    // hull top highlight
+    ctx.fillStyle = 'rgba(255,255,255,0.45)';
+    ctx.beginPath();
+    ctx.ellipse(p.x-5, p.y-5.5, 6.5, 2.4, -0.3, 0, Math.PI*2);
+    ctx.fill();
+
+    ctx.restore();
+  }
+
+  var rimColors = [COLORS.laser, COLORS.ufo, COLORS.laser, COLORS.ufo, COLORS.laser, COLORS.ufo];
+
+  function drawUFO(now){
+    if (!state.ufoAlive) return;
+    var pos = ufoScreenPos();
+    var x = pos.x, y = pos.y;
+
+    ctx.fillStyle = 'rgba(0,0,0,0.35)';
+    ctx.beginPath();
+    ctx.ellipse(x, CFG.GY+4, 16, 4, 0, 0, Math.PI*2);
+    ctx.fill();
+
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.scale(1.4, 1.4);
+    ctx.translate(-x, -y);
+
+    // tractor beam (soft, pulsing)
+    var beamPulse = 0.5 + 0.5*Math.sin(now*0.003);
+    var beamGrad = ctx.createLinearGradient(x, y+6, x, y+64);
+    beamGrad.addColorStop(0, 'rgba(127,203,158,'+(0.16+0.05*beamPulse).toFixed(3)+')');
+    beamGrad.addColorStop(1, 'rgba(127,203,158,0)');
+    ctx.fillStyle = beamGrad;
+    ctx.beginPath();
+    ctx.moveTo(x-9,y+6); ctx.lineTo(x+9,y+6); ctx.lineTo(x+20,y+64); ctx.lineTo(x-20,y+64);
+    ctx.closePath(); ctx.fill();
+
+    // outer glow halo
+    ctx.fillStyle = 'rgba(127,203,158,0.10)';
+    ctx.beginPath(); ctx.ellipse(x,y,27,13,0,0,Math.PI*2); ctx.fill();
+
+    // lower saucer ring
+    var lowerGrad = ctx.createLinearGradient(x-18,y+3,x+18,y+3);
+    lowerGrad.addColorStop(0,'#274536');
+    lowerGrad.addColorStop(0.5,'#3E6B52');
+    lowerGrad.addColorStop(1,'#274536');
+    ctx.fillStyle = lowerGrad;
+    ctx.beginPath(); ctx.ellipse(x, y+2.5, 18, 6, 0, 0, Math.PI*2); ctx.fill();
+
+    // main saucer body
+    var saucerGrad = ctx.createLinearGradient(x-20,y,x+20,y);
+    saucerGrad.addColorStop(0,'#3E6B52');
+    saucerGrad.addColorStop(0.5,'#79C09A');
+    saucerGrad.addColorStop(1,'#3E6B52');
+    ctx.fillStyle = saucerGrad;
+    ctx.beginPath();
+    ctx.ellipse(x, y, 20, 7.5, 0, 0, Math.PI*2);
+    ctx.fill();
+
+    // rim highlight edge
+    ctx.strokeStyle = 'rgba(200,255,225,0.4)';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.ellipse(x, y-1, 19, 6.6, 0, Math.PI*1.1, Math.PI*1.9); ctx.stroke();
+
+    // rim lights, twinkling
+    for (var i=0;i<8;i++){
+      var ang = (i/8)*Math.PI*2;
+      var lx = x + Math.cos(ang)*17.5;
+      var ly = y + Math.sin(ang)*6.2;
+      var twinkle = 0.5 + 0.5*Math.sin(now*0.006 + i*1.4);
+      ctx.globalAlpha = 0.45 + 0.55*twinkle;
+      ctx.fillStyle = rimColors[i % rimColors.length];
+      ctx.shadowColor = rimColors[i % rimColors.length]; ctx.shadowBlur = 4;
+      ctx.beginPath(); ctx.arc(lx,ly,1.7,0,Math.PI*2); ctx.fill();
+      ctx.shadowBlur = 0;
+    }
+    ctx.globalAlpha = 1;
+
+    // dome
+    var domeGrad = ctx.createRadialGradient(x-4,y-14,1,x,y-8,16);
+    domeGrad.addColorStop(0,'rgba(235,250,240,0.92)');
+    domeGrad.addColorStop(0.4,'rgba(127,203,158,0.55)');
+    domeGrad.addColorStop(1,'rgba(50,95,72,0.4)');
+    ctx.fillStyle = domeGrad;
+    ctx.beginPath();
+    ctx.arc(x, y-4, 12.5, Math.PI, 0);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(220,255,235,0.35)';
+    ctx.lineWidth = 0.8;
+    ctx.beginPath(); ctx.arc(x, y-4, 12.5, Math.PI, 0); ctx.stroke();
+
+    // dome glint
+    ctx.fillStyle = 'rgba(255,255,255,0.75)';
+    ctx.beginPath(); ctx.ellipse(x-5, y-11, 2.6, 1.6, -0.5, 0, Math.PI*2); ctx.fill();
+
+    // eyes with soft glow
+    ctx.fillStyle = '#C65A48';
+    ctx.shadowColor = '#C65A48'; ctx.shadowBlur = 3;
+    ctx.beginPath(); ctx.arc(x-4,y-8,1.6,0,Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(x+4,y-8,1.6,0,Math.PI*2); ctx.fill();
+    ctx.shadowBlur = 0;
+
+    ctx.restore();
+  }
+
+  function drawLaser(){
+    if (!state.laser) return;
+    for (var i=0;i<state.trail.length;i++){
+      var t = state.trail[i];
+      ctx.fillStyle = 'rgba(127,176,224,'+(t.a*0.6).toFixed(3)+')';
+      ctx.beginPath(); ctx.arc(t.x,t.y,2.2,0,Math.PI*2); ctx.fill();
+    }
+
+    var laser = state.laser;
+    if (laser.px !== undefined){
+      ctx.strokeStyle = 'rgba(127,176,224,0.25)';
+      ctx.lineWidth = 7;
+      ctx.beginPath(); ctx.moveTo(laser.px,laser.py); ctx.lineTo(laser.x,laser.y); ctx.stroke();
+
+      ctx.strokeStyle = COLORS.laser;
+      ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.moveTo(laser.px,laser.py); ctx.lineTo(laser.x,laser.y); ctx.stroke();
+    }
+
+    ctx.fillStyle = '#ffffff';
+    ctx.shadowColor = COLORS.laser; ctx.shadowBlur = 5;
+    ctx.beginPath(); ctx.arc(laser.x,laser.y,4,0,Math.PI*2); ctx.fill();
+    ctx.shadowBlur = 0;
+  }
+
+  function drawExplosion(){
+    var ex = state.explosion;
+    if (!ex) return;
+    var prog = ex.frame/ex.dur;
+    var rayLen = 10 + prog*26;
+    var fade = 1-prog;
+
+    var glow = ctx.createRadialGradient(ex.x,ex.y,1,ex.x,ex.y,34*prog+6);
+    glow.addColorStop(0,'rgba(127,203,158,'+(0.45*fade).toFixed(3)+')');
+    glow.addColorStop(1,'rgba(127,203,158,0)');
+    ctx.fillStyle = glow;
+    ctx.beginPath(); ctx.arc(ex.x,ex.y,34*prog+6,0,Math.PI*2); ctx.fill();
+
+    var rayColors = [COLORS.ufo, COLORS.laser, '#ffffff'];
+    ctx.lineWidth = 2;
+    for (var i=0;i<14;i++){
+      var ang = (i/14)*Math.PI*2;
+      ctx.strokeStyle = rayColors[i%3];
+      ctx.globalAlpha = fade;
+      ctx.beginPath();
+      ctx.moveTo(ex.x + Math.cos(ang)*4, ex.y + Math.sin(ang)*4);
+      ctx.lineTo(ex.x + Math.cos(ang)*rayLen, ex.y + Math.sin(ang)*rayLen);
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+
+    for (var j=0;j<ex.particles.length;j++){
+      var p = ex.particles[j];
+      if (p.life<=0) continue;
+      ctx.globalAlpha = Math.max(p.life,0);
+      ctx.fillStyle = p.col;
+      ctx.beginPath(); ctx.arc(p.x,p.y,1.8,0,Math.PI*2); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+
+    if (prog < 0.7){
+      ctx.font = '20px "Courier New", monospace';
+      ctx.textAlign = 'center';
+      ctx.globalAlpha = fade;
+      ctx.fillText(ex.emoji, ex.x, ex.y-30*prog);
+      ctx.globalAlpha = 1;
+      ctx.textAlign = 'left';
+    }
+  }
+
+  function drawAttack(){
+    var atk = state.attack;
+    if (!atk) return;
+
+    if (atk.frame <= atk.beamDur){
+      var pulse = 0.6 + 0.4*Math.sin(atk.frame*1.4);
+      ctx.save();
+      ctx.globalAlpha = pulse;
+      ctx.strokeStyle = 'rgba(221,133,112,0.35)';
+      ctx.lineWidth = 7;
+      ctx.beginPath(); ctx.moveTo(atk.ufoX,atk.ufoY); ctx.lineTo(atk.shipX,atk.shipY); ctx.stroke();
+      ctx.strokeStyle = COLORS.danger;
+      ctx.lineWidth = 3;
+      ctx.shadowColor = COLORS.danger; ctx.shadowBlur = 6;
+      ctx.beginPath(); ctx.moveTo(atk.ufoX,atk.ufoY); ctx.lineTo(atk.shipX,atk.shipY); ctx.stroke();
+      ctx.shadowBlur = 0;
+      ctx.restore();
+      return;
+    }
+
+    if (!atk.particles) return;
+    var prog = (atk.frame-atk.beamDur)/(atk.totalDur-atk.beamDur);
+    var fade = 1-prog;
+
+    var glow = ctx.createRadialGradient(atk.shipX,atk.shipY,1,atk.shipX,atk.shipY,36*prog+6);
+    glow.addColorStop(0,'rgba(221,133,112,'+(0.5*fade).toFixed(3)+')');
+    glow.addColorStop(1,'rgba(221,133,112,0)');
+    ctx.fillStyle = glow;
+    ctx.beginPath(); ctx.arc(atk.shipX,atk.shipY,36*prog+6,0,Math.PI*2); ctx.fill();
+
+    for (var i=0;i<atk.particles.length;i++){
+      var p = atk.particles[i];
+      if (p.life<=0) continue;
+      ctx.globalAlpha = Math.max(p.life,0);
+      ctx.fillStyle = p.col;
+      ctx.beginPath(); ctx.arc(p.x,p.y,1.8,0,Math.PI*2); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+
+    if (prog < 0.7){
+      ctx.font = '20px "Courier New", monospace';
+      ctx.textAlign = 'center';
+      ctx.globalAlpha = fade;
+      ctx.fillText('💥', atk.shipX, atk.shipY-30*prog);
+      ctx.globalAlpha = 1;
+      ctx.textAlign = 'left';
+    }
+  }
+
+  function render(){
+    var now = performance.now();
+    ctx.clearRect(0,0,W,H);
+    drawBackground();
+    drawGrid();
+    drawGround();
+    drawReference();
+    drawUFO(now);
+    drawLaser();
+    drawExplosion();
+    drawAttack();
+    if (!(state.attack && state.attack.particles)) drawSpaceship(now);
+  }
+
+  function loop(){
+    stepLaser();
+    stepExplosion();
+    stepAttack();
+    render();
+    requestAnimationFrame(loop);
+  }
+
+  refreshPanel();
+  updateScore();
+  requestAnimationFrame(loop);
+})();
+</script>
